@@ -4,12 +4,16 @@ package com.qikserve.inventoryControl.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Product {
 
 
@@ -25,6 +29,6 @@ public class Product {
     private double price;
 
     @Column(name="promotion")
-    private Promotion promotion;
+    private List<Promotion> promotions;
 
 }
