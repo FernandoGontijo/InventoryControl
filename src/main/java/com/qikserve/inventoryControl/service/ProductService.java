@@ -4,8 +4,8 @@ package com.qikserve.inventoryControl.service;
 import com.qikserve.inventoryControl.dto.ProductDTO;
 import com.qikserve.inventoryControl.model.Product;
 import com.qikserve.inventoryControl.repository.ProductRepository;
+import com.qikserve.inventoryControl.util.Util;
 import jakarta.persistence.EntityNotFoundException;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,20 +19,20 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    private ModelMapper modelMapper = new ModelMapper();
+
 
 
     public List<ProductDTO> findAll() {
         List<Product> products = productRepository.findAll();
         List<ProductDTO> productDTO = new ArrayList<>();
-        products.forEach(product -> productDTO.add(modelMapper.map(product, ProductDTO.class)));
+        products.forEach(product -> productDTO.add(Util.modelMapper.map(product, ProductDTO.class)));
         return productDTO;
     }
 
     public ProductDTO findBy(String id) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
-            return modelMapper.map(product.get(), ProductDTO.class);
+            return Util.modelMapper.map(product.get(), ProductDTO.class);
         } else {
             throw new EntityNotFoundException("Product not found!");
         }
@@ -40,9 +40,10 @@ public class ProductService {
 
     public ProductDTO insert(ProductDTO productDTO) {
         checkProduct(productDTO);
-        Product product = modelMapper.map(productDTO, Product.class);
+        Product product = Util.modelMapper.map(productDTO, Product.class);
+        product.setId(Util.createID());
         Product productCreated = productRepository.save(product);
-        return modelMapper.map(productCreated, ProductDTO.class);
+        return Util.modelMapper.map(productCreated, ProductDTO.class);
     }
 
     public ProductDTO update(ProductDTO productDTO) {
@@ -52,12 +53,12 @@ public class ProductService {
         product.setPrice(productDTO.price());
         product.setName(productDTO.name());
         productRepository.save(product);
-        return modelMapper.map(product, ProductDTO.class);
+        return Util.modelMapper.map(product, ProductDTO.class);
     }
 
     public void remove(String id) {
         ProductDTO productToRemove = findBy(id);
-        productRepository.delete(modelMapper.map(productToRemove, Product.class));
+        productRepository.delete(Util.modelMapper.map(productToRemove, Product.class));
     }
 
     private void checkProduct(ProductDTO productDTO) throws IllegalArgumentException {

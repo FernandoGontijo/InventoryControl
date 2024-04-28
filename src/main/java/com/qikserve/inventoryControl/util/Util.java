@@ -1,5 +1,6 @@
 package com.qikserve.inventoryControl.util;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -7,6 +8,7 @@ import java.util.Random;
 @Component
 public class Util {
 
+    public static ModelMapper modelMapper = new ModelMapper();
 
     public static String createID() {
         int length = 10;
