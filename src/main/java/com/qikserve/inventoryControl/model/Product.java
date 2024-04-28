@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.List;
 
@@ -18,8 +19,6 @@ public class Product {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
     private String id;
 
     @Column(name="name")
@@ -27,8 +26,5 @@ public class Product {
 
     @Column(name="price")
     private double price;
-
-    @Column(name="promotion")
-    private List<Promotion> promotions;
 
 }

@@ -6,22 +6,24 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PromotionCart {
+public class ProductCart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
     private String id;
 
-    @Column(name="cart_id")
-    private Cart cart;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "cart_id")
+//    private Cart cart;
 
-    @Column(name="product_id")
-    private Product product;
+//
+//    @JoinColumn(name = "product_id")
+//    private Product product;
 }

@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,8 +19,6 @@ import lombok.Setter;
 public class Cart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
     private String id;
 
     @Column(name="totalPrice")
@@ -25,6 +27,15 @@ public class Cart {
     @Column(name="quantity")
     private int quantiy;
 
-    @Column(name="customer_id")
+    @OneToOne
+    @JoinColumn(name="customer_id")
     private Customer customer;
+
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "ProductCart", joinColumns =
+    @JoinColumn(name = "cart_id"), inverseJoinColumns =
+    @JoinColumn(name = "product_id"))
+    private List<Product> products = new ArrayList<>();
+
 }

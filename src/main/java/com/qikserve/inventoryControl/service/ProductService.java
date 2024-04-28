@@ -51,13 +51,13 @@ public class ProductService {
                 try {
                     getProductsInformations(product.getId());
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(e.getMessage());
                 }
 
             });
 
         } catch (Exception e) {
-            throw new Exception("Error fetching products.");
+            throw new Exception(e.getMessage());
         }
     }
 
@@ -65,37 +65,39 @@ public class ProductService {
 
         try {
 
+            List<Promotion> promotions = new ArrayList<>();
+            Promotion promotionToSave = new Promotion();
+
             String productsInfoURL = WIREMOCK_URL + "/products/" + id;
-            ResponseEntity<Product> responseInfo = restTemplate.getForEntity(productsInfoURL, Product.class);
-            Product productInfo = responseInfo.getBody();
+            ResponseEntity<ProductDTO> responseInfo = restTemplate.getForEntity(productsInfoURL, ProductDTO.class);
+            ProductDTO productInfo = responseInfo.getBody();
 
             Product product = new Product();
             product.setId(productInfo.getId());
             product.setName(productInfo.getName());
             product.setPrice(productInfo.getPrice());
 
-            if (product.getPromotions() != null && !product.getPromotions().isEmpty()) {
+            productRepository.save(product);
 
-                List<Promotion> promotions = new ArrayList<>();
+            if (productInfo.getPromotions() != null && !productInfo.getPromotions().isEmpty()) {
 
-                for (Promotion promotion : product.getPromotions()) {
-                    Promotion promotionDTO = new Promotion();
-                    promotion.setId(promotion.getId());
-                    promotion.setType(promotionDTO.getType());
-                    promotion.setRequired_qty(promotionDTO.getRequired_qty());
-                    promotion.setPrice(promotionDTO.getPrice());
+                for (Promotion promotion : productInfo.getPromotions()) {
 
-                    promotions.add(promotion);
+                    promotionToSave.setId(promotion.getId());
+                    promotionToSave.setType(promotion.getType());
+                    promotionToSave.setRequired_qty(promotion.getRequired_qty());
+                    promotionToSave.setPrice(promotion.getPrice());
+                    promotionToSave.setAmount(promotion.getAmount());
+                    promotionToSave.setProduct(product);
 
-                    promotionRepository.save(promotion);
-
+                    promotions.add(promotionToSave);
                 }
-                product.setPromotions(promotions);
-
-                productRepository.save(product);
+                promotionRepository.save(promotionToSave);
             }
+
+            System.out.println("Product save!");
         } catch (Exception e) {
-            throw new Exception("Error fetching products informations.");
+            throw new Exception(e.getMessage());
         }
     }
 
