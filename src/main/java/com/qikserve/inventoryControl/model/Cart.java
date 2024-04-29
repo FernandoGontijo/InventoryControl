@@ -24,6 +24,9 @@ public class Cart {
     @Column(name="totalPrice")
     private double totalPrice;
 
+    @Column(name="totalSavings")
+    private double totalSavings;
+
     @Column(name="quantity")
     private int quantiy;
 

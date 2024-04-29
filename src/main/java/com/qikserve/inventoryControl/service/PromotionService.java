@@ -50,7 +50,7 @@ public class PromotionService {
     }
 
     public PromotionDTO insert(PromotionDTO promotionDTO) {
-        checkProduct(promotionDTO);
+        checkPromotion(promotionDTO);
         Promotion promotion = Util.modelMapper.map(promotionDTO, Promotion.class);
         promotion.setId(Util.createID());
         Promotion promotionCreated = promotionRepository.save(promotion);
@@ -75,7 +75,7 @@ public class PromotionService {
         promotionRepository.delete(Util.modelMapper.map(promotionToRemove, Promotion.class));
     }
 
-    private void checkProduct(PromotionDTO promotionDTO) throws IllegalArgumentException {
+    private void checkPromotion(PromotionDTO promotionDTO) throws IllegalArgumentException {
 
         if (promotionDTO == null) {
             throw new IllegalArgumentException("Invalid promotion!");

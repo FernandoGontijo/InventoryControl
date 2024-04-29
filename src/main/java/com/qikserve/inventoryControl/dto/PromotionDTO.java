@@ -15,6 +15,7 @@ public record PromotionDTO(
         @JsonProperty("amount") int amount,
         @JsonProperty("required_qty") int required_qty,
         @JsonProperty("price") double price,
+        @JsonProperty("free_qty") int free_qty,
         @JsonProperty("product") Product product
 
 ) implements Serializable {}

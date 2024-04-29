@@ -1,7 +1,6 @@
 package com.qikserve.inventoryControl.service;
 
 import com.qikserve.inventoryControl.dto.CustomerDTO;
-import com.qikserve.inventoryControl.model.Cart;
 import com.qikserve.inventoryControl.model.Customer;
 import com.qikserve.inventoryControl.repository.CustomerRepository;
 import com.qikserve.inventoryControl.util.Util;
@@ -16,11 +15,8 @@ import java.util.Optional;
 @Service
 public class CustomerService {
 
-
-
     @Autowired
     private CustomerRepository customerRepository;
-
 
     public List<CustomerDTO> findAll() {
         List<Customer> customers = customerRepository.findAll();
@@ -39,7 +35,7 @@ public class CustomerService {
     }
 
     public CustomerDTO insert(CustomerDTO customerDTO) {
-        checkProduct(customerDTO);
+        checkCustomer(customerDTO);
         Customer customer = Util.modelMapper.map(customerDTO, Customer.class);
         customer.setId(Util.createID());
         Customer customerCreated = customerRepository.save(customer);
@@ -60,7 +56,7 @@ public class CustomerService {
         customerRepository.delete(Util.modelMapper.map(customerToRemove, Customer.class));
     }
 
-    private void checkProduct(CustomerDTO customerDTO) throws IllegalArgumentException {
+    private void checkCustomer(CustomerDTO customerDTO) throws IllegalArgumentException {
 
         if (customerDTO == null) {
             throw new IllegalArgumentException("Invalid cart!");

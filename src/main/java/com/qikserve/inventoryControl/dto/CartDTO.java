@@ -10,6 +10,7 @@ import java.util.List;
 public record CartDTO(
         @JsonProperty("id") String id,
         @JsonProperty("totalPrice") double totalPrice,
+        @JsonProperty("totalSavings") double totalSavings,
         @JsonProperty("quantity") int quantity,
         @JsonProperty("customer_id") Customer customer,
         @JsonProperty("products") List<Product> products

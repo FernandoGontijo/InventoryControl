@@ -61,7 +61,7 @@ public class ProductService {
         productRepository.delete(Util.modelMapper.map(productToRemove, Product.class));
     }
 
-    private void checkProduct(ProductDTO productDTO) throws IllegalArgumentException {
+    public void checkProduct(ProductDTO productDTO) throws IllegalArgumentException {
 
         if (productDTO == null) {
             throw new IllegalArgumentException("Invalid product!");

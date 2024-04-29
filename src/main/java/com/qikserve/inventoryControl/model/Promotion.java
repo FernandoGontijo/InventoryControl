@@ -35,4 +35,7 @@ public class Promotion {
     @Column(name="price")
     private double price;
 
+    @Column(name="free_qty")
+    private int free_qty;
+
 }
