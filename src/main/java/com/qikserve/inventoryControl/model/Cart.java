@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +21,13 @@ public class Cart {
     private String id;
 
     @Column(name="totalPrice")
-    private double totalPrice;
+    private int totalPrice;
 
     @Column(name="totalSavings")
-    private double totalSavings;
+    private int totalSavings;
 
     @Column(name="quantity")
-    private int quantiy;
+    private int quantity;
 
     @OneToOne
     @JoinColumn(name="customer_id")

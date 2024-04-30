@@ -67,12 +67,12 @@ public class PromotionService {
         logger.debug("Updating promotion with ID: {}", id);
         PromotionDTO promotionToUpdate = findBy(id);
         Promotion promotion = new Promotion();
-        promotion.setId(promotionToUpdate.id());
-        promotion.setPrice(promotionDTO.price());
-        promotion.setAmount(promotionDTO.amount());
-        promotion.setRequired_qty(promotionToUpdate.required_qty());
-        promotion.setType(promotionDTO.type());
-        promotion.setProduct(promotionDTO.product());
+        promotion.setId(promotionToUpdate.getId());
+        promotion.setPrice(promotionDTO.getPrice());
+        promotion.setAmount(promotionDTO.getAmount());
+        promotion.setRequired_qty(promotionToUpdate.getRequiredQty());
+        promotion.setType(promotionDTO.getType());
+        promotion.setProduct(promotionDTO.getProduct());
         promotionRepository.save(promotion);
         return Util.modelMapper.map(promotion, PromotionDTO.class);
     }
@@ -88,13 +88,13 @@ public class PromotionService {
         if (promotionDTO == null) {
             throw new IllegalArgumentException("Invalid promotion!");
         }
-        if (promotionDTO.type() == null || promotionDTO.type().isEmpty()) {
+        if (promotionDTO.getType() == null || promotionDTO.getType().isEmpty()) {
             throw new IllegalArgumentException("Invalid promotion type!");
         }
-        if (promotionDTO.price() <= 0) {
+        if (promotionDTO.getPrice() <= 0) {
             throw new IllegalArgumentException("Invalid promotion price!");
         }
-        if (promotionDTO.product() == null) {
+        if (promotionDTO.getProduct() == null) {
             throw new IllegalArgumentException("Product not found!");
         }
     }

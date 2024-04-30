@@ -10,7 +10,7 @@ import java.util.List;
 public record ProductWiremockDTO (
         @JsonProperty("id") String id,
         @JsonProperty("name") String name,
-        @JsonProperty("price") double price,
+        @JsonProperty("price") int price,
         @JsonProperty("promotions") List<Promotion> promotions
 ) implements Serializable {}
 

@@ -45,9 +45,10 @@ public class CartService {
 
     public CartDTO findBy(String id) {
         logger.debug("Finding cart by ID: {}", id);
-        Optional<Cart> cart = cartRepository.findById(id);
-        if (cart.isPresent()) {
-            return Util.modelMapper.map(cart.get(), CartDTO.class);
+        Optional<Cart> cartOptional = cartRepository.findById(id);
+        if (cartOptional.isPresent()) {
+            Cart cart = cartOptional.get();
+            return Util.modelMapper.map(cart, CartDTO.class);
         } else {
             logger.error("Cart not found with ID: {}", id);
             throw new EntityNotFoundException("Cart not found!");
@@ -67,11 +68,11 @@ public class CartService {
         logger.debug("Updating cart with ID: {}", id);
         CartDTO cartToUpdate = findBy(id);
         Cart cart = new Cart();
-        cart.setId(cartToUpdate.id());
-        cart.setCustomer(cartDTO.customer());
-        cart.setProducts(cartDTO.products());
-        cart.setQuantiy(cartDTO.quantity());
-        cart.setTotalPrice(cartDTO.totalPrice());
+        cart.setId(cartToUpdate.getId());
+        cart.setCustomer(cartDTO.getCustomer());
+        cart.setProducts(cartDTO.getProducts());
+        cart.setQuantity(cartDTO.getQuantity());
+        cart.setTotalPrice(cartDTO.getTotalPrice());
         cartRepository.save(cart);
         return Util.modelMapper.map(cart, CartDTO.class);
     }
@@ -87,7 +88,7 @@ public class CartService {
         if (cartDTO == null) {
             throw new IllegalArgumentException("Invalid cart!");
         }
-        if (cartDTO.customer() == null) {
+        if (cartDTO.getCustomer() == null) {
             throw new IllegalArgumentException("Customer not found!");
         }
     }
@@ -99,18 +100,18 @@ public class CartService {
         validateProducts(productsDTO);
         CartDTO cartDTO = findBy(cart_id);
 
-        double totalSavings = 0;
+        int totalSavings = 0;
         int quantity = 0;
 
         Cart cart = Util.modelMapper.map(cartDTO, Cart.class);
 
         for (ProductDTO productDTO : productsDTO) {
             Product product = Util.modelMapper.map(productDTO, Product.class);
-            totalSavings = addPromotions(product, cart);
+            totalSavings += addPromotions(product, cart);
             quantity++;
         }
 
-        cart.setQuantiy(quantity);
+        cart.setQuantity(quantity);
         cart.setTotalPrice(getTotalPrice(cart));
         cart.setTotalSavings(totalSavings);
 
@@ -118,18 +119,18 @@ public class CartService {
 
     }
 
-    private double getTotalPrice(Cart cart) {
+    private int getTotalPrice(Cart cart) {
         logger.debug("Getting the total price cart.");
-        double totalPrice = 0;
+        int totalPrice = 0;
         for (Product product : cart.getProducts()) {
             totalPrice += product.getPrice();
         }
         return totalPrice;
     }
 
-    private double addPromotions(Product product, Cart cart) {
+    private int addPromotions(Product product, Cart cart) {
         logger.debug("Adding promotions.");
-        double totalSavings = 0;
+        int totalSavings = 0;
 
         List<PromotionDTO> promotionsDTO = promotionService.findAllByProduct(product.getId());
 
@@ -141,7 +142,7 @@ public class CartService {
                         .filter(productFilter -> productFilter.getId().equals(product.getId()))
                         .collect(Collectors.toList());
 
-                switch (promotionDTO.type()) {
+                switch (promotionDTO.getType()) {
                     case "BUY_X_GET_Y_FREE":
                         totalSavings += applyBuyXGetYFreePromotion(cart, promotionDTO, product, products);
                         break;
@@ -152,67 +153,75 @@ public class CartService {
                         totalSavings += applyFlatPercentDiscount(cart, product);
                         break;
                     default:
-                        throw new IllegalArgumentException("Unknown promotion type: " + promotionDTO.type());
+                        cart.getProducts().add(product);
                 }
             }
+        } else {
+            cart.getProducts().add(product);
         }
         return totalSavings;
     }
 
 
-    private double applyBuyXGetYFreePromotion(Cart cart, PromotionDTO promotionDTO,
+    private int applyBuyXGetYFreePromotion(Cart cart, PromotionDTO promotionDTO,
                                               Product product, List<Product> products) {
         logger.debug("Applying 'Buy X Get Y Free' promotion for product {} in cart {}",
                 product.getName(), cart.getId());
 
-        double savings = 0;
+        int savings = 0;
 
-        if (products.size() >= promotionDTO.required_qty() && products.size() % 2 == 0) {
-            savings = ((products.size() * product.getPrice()) / 2);
+        if ((products.size() + 1) >= promotionDTO.getAmount() && (products.size() + 1) % 2 == 0) {
+            savings = (((products.size() + 1) * product.getPrice()) / 2);
             product.setPrice(0);
-        } else if (products.size() >= promotionDTO.required_qty() && products.size() % 2 != 0) {
-            savings = (((products.size() * product.getPrice()) / 2) + product.getPrice());
+        } else if ((products.size() + 1) >= promotionDTO.getAmount() && (products.size() + 1) % 2 != 0) {
+            savings = ((((products.size() + 1) * product.getPrice()) / 2) + product.getPrice());
         }
 
         cart.getProducts().add(product);
         return savings;
     }
 
-    private double applyQtyBasedPriceOverride(Cart cart, PromotionDTO promotionDTO,
+    private int applyQtyBasedPriceOverride(Cart cart, PromotionDTO promotionDTO,
                                               Product product, List<Product> products) {
 
         logger.debug("Applying 'Qty Based Price Override' promotion for product {} in cart {}",
                 product.getName(), cart.getId());
+        int savings = 0;
+        int totalPrice = ((products.size()+1) * product.getPrice());
 
-        double totalPrice = ((products.size()+1) * product.getPrice());
-        double normalPrice = product.getPrice();
+        int normalPrice = 0;
 
-        if (products.size() >= promotionDTO.required_qty() - 1) {
-            double discountAmount = product.getPrice() * 0.363;
-            double priceWithDiscount = product.getPrice() - discountAmount;
-            product.setPrice(priceWithDiscount);
-            cart.getProducts().add(product);
+        for (Product prod : products) {
+            normalPrice += prod.getPrice();
         }
 
-        double newPrice = (((products.size() - 1) * product.getPrice()) + normalPrice);
-        double savings = totalPrice - newPrice;
+
+        if (products.size()  >= promotionDTO.getRequiredQty() - 1) {
+            double discountAmount = product.getPrice() * 0.363;
+            int priceWithDiscount = (int) (product.getPrice() - discountAmount);
+            product.setPrice(priceWithDiscount);
+            savings = totalPrice - (priceWithDiscount + normalPrice);
+        }
+
+        cart.getProducts().add(product);
+
         return savings;
     }
 
-    private double applyFlatPercentDiscount(Cart cart, Product product) {
+    private int applyFlatPercentDiscount(Cart cart, Product product) {
 
         logger.debug("Applying 'Flat Percent Discount' promotion for product {} in cart {}",
                 product.getName(), cart.getId());
 
-        double saving = (product.getPrice() * 0.10);
-        double newPrice = product.getPrice() - saving;
+        double saving = product.getPrice() * 0.10;
+        int newPrice = (int) Math.ceil(product.getPrice() - saving);
 
         product.setPrice(newPrice);
         cart.getProducts().add(product);
 
-        return saving;
-
+        return (int) Math.ceil(saving);
     }
+
 
 
     private void validateProducts(List<ProductDTO> productsDTO) {

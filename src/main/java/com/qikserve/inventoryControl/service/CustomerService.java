@@ -53,8 +53,8 @@ public class CustomerService {
         logger.debug("Updating customer with ID: {}", id);
         CustomerDTO cartToUpdate = findBy(id);
         Customer customer = new Customer();
-        customer.setId(cartToUpdate.id());
-        customer.setName(customerDTO.name());
+        customer.setId(cartToUpdate.getId());
+        customer.setName(customerDTO.getName());
         customerRepository.save(customer);
         return Util.modelMapper.map(customer, CustomerDTO.class);
     }
@@ -70,7 +70,7 @@ public class CustomerService {
         if (customerDTO == null) {
             throw new IllegalArgumentException("Invalid cart!");
         }
-        if (customerDTO.name() == null) {
+        if (customerDTO.getName() == null) {
             throw new IllegalArgumentException("Invalid customer name!");
         }
     }

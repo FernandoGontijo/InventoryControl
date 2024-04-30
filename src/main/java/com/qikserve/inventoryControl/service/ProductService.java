@@ -56,9 +56,9 @@ public class ProductService {
         logger.debug("Updating product with ID: {}", id);
         ProductDTO productToUpdate = findBy(id);
         Product product = new Product();
-        product.setId(productToUpdate.id());
-        product.setPrice(productDTO.price());
-        product.setName(productDTO.name());
+        product.setId(productToUpdate.getId());
+        product.setPrice(productDTO.getPrice());
+        product.setName(productDTO.getName());
         productRepository.save(product);
         return Util.modelMapper.map(product, ProductDTO.class);
     }
@@ -74,10 +74,10 @@ public class ProductService {
         if (productDTO == null) {
             throw new IllegalArgumentException("Invalid product!");
         }
-        if (productDTO.name() == null || productDTO.name().isEmpty()) {
+        if (productDTO.getName() == null || productDTO.getName().isEmpty()) {
             throw new IllegalArgumentException("Invalid product name!");
         }
-        if (productDTO.price() <= 0) {
+        if (productDTO.getPrice() <= 0) {
             throw new IllegalArgumentException("Invalid product price!");
         }
     }

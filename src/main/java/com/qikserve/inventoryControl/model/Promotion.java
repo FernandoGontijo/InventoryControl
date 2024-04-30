@@ -33,7 +33,7 @@ public class Promotion {
     private int required_qty;
 
     @Column(name="price")
-    private double price;
+    private int price;
 
     @Column(name="free_qty")
     private int free_qty;
