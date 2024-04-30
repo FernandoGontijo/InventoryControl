@@ -16,9 +16,11 @@ When initializing the project, it will consume data from the wiremocks to popula
 
 A powerful feature that was added was Records. With it, I can create simple immutable data objects concisely. Here's an example of how I used records in the project.
 
-![Screenshot 2024-04-30 at 10.50.53.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2F2_%2F43qjh7g503l89k8v69x7pqnm0000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_N3fMft%2FScreenshot%202024-04-30%20at%2010.50.53.png)
+<img width="817" alt="Screenshot 2024-04-30 at 13 04 10" src="https://github.com/FernandoGontijo/InventoryControl/assets/16126146/a5c3151b-5086-42d1-b768-1f06e5f9c7fd">
 
-![Screenshot 2024-04-30 at 11.17.12.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2F2_%2F43qjh7g503l89k8v69x7pqnm0000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_xfqnjs%2FScreenshot%202024-04-30%20at%2011.17.12.png)
+<img width="619" alt="Screenshot 2024-04-30 at 13 05 03" src="https://github.com/FernandoGontijo/InventoryControl/assets/16126146/fbaa6811-be8d-45eb-b069-5507e9f20e75">
+
+
 
 3. What did you find most difficult?
 
