@@ -11,6 +11,8 @@ import com.qikserve.inventoryControl.util.Util;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class CartService {
+
+    private static final Logger logger = LogManager.getLogger(CartService.class);
+
 
     @Autowired
     private CartRepository cartRepository;
@@ -31,6 +36,7 @@ public class CartService {
 
 
     public List<CartDTO> findAll() {
+        logger.debug("Finding all carts");
         List<Cart> carts = cartRepository.findAll();
         List<CartDTO> cartDTO = new ArrayList<>();
         carts.forEach(cart -> cartDTO.add(Util.modelMapper.map(cart, CartDTO.class)));
@@ -38,15 +44,18 @@ public class CartService {
     }
 
     public CartDTO findBy(String id) {
+        logger.debug("Finding cart by ID: {}", id);
         Optional<Cart> cart = cartRepository.findById(id);
         if (cart.isPresent()) {
             return Util.modelMapper.map(cart.get(), CartDTO.class);
         } else {
+            logger.error("Cart not found with ID: {}", id);
             throw new EntityNotFoundException("Cart not found!");
         }
     }
 
     public CartDTO insert(CartDTO cartDTO) {
+        logger.debug("Inserting cart: {}", cartDTO);
         checkCart(cartDTO);
         Cart cart = Util.modelMapper.map(cartDTO, Cart.class);
         cart.setId(Util.createID());
@@ -55,6 +64,7 @@ public class CartService {
     }
 
     public CartDTO update(CartDTO cartDTO, String id) {
+        logger.debug("Updating cart with ID: {}", id);
         CartDTO cartToUpdate = findBy(id);
         Cart cart = new Cart();
         cart.setId(cartToUpdate.id());
@@ -67,6 +77,7 @@ public class CartService {
     }
 
     public void remove(String id) {
+        logger.debug("Removing cart with ID: {}", id);
         CartDTO cartToRemove = findBy(id);
         cartRepository.delete(Util.modelMapper.map(cartToRemove, Cart.class));
     }
@@ -84,6 +95,7 @@ public class CartService {
 
     public CartDTO addProductToCart(List<ProductDTO> productsDTO, String cart_id) {
 
+        logger.debug("Adding products to cart with ID: {}", cart_id);
         validateProducts(productsDTO);
         CartDTO cartDTO = findBy(cart_id);
 
@@ -107,7 +119,7 @@ public class CartService {
     }
 
     private double getTotalPrice(Cart cart) {
-
+        logger.debug("Getting the total price cart.");
         double totalPrice = 0;
         for (Product product : cart.getProducts()) {
             totalPrice += product.getPrice();
@@ -116,7 +128,7 @@ public class CartService {
     }
 
     private double addPromotions(Product product, Cart cart) {
-
+        logger.debug("Adding promotions.");
         double totalSavings = 0;
 
         List<PromotionDTO> promotionsDTO = promotionService.findAllByProduct(product.getId());
@@ -150,6 +162,8 @@ public class CartService {
 
     private double applyBuyXGetYFreePromotion(Cart cart, PromotionDTO promotionDTO,
                                               Product product, List<Product> products) {
+        logger.debug("Applying 'Buy X Get Y Free' promotion for product {} in cart {}",
+                product.getName(), cart.getId());
 
         double savings = 0;
 
@@ -166,6 +180,9 @@ public class CartService {
 
     private double applyQtyBasedPriceOverride(Cart cart, PromotionDTO promotionDTO,
                                               Product product, List<Product> products) {
+
+        logger.debug("Applying 'Qty Based Price Override' promotion for product {} in cart {}",
+                product.getName(), cart.getId());
 
         double totalPrice = ((products.size()+1) * product.getPrice());
         double normalPrice = product.getPrice();
@@ -184,6 +201,9 @@ public class CartService {
 
     private double applyFlatPercentDiscount(Cart cart, Product product) {
 
+        logger.debug("Applying 'Flat Percent Discount' promotion for product {} in cart {}",
+                product.getName(), cart.getId());
+
         double saving = (product.getPrice() * 0.10);
         double newPrice = product.getPrice() - saving;
 
@@ -196,6 +216,7 @@ public class CartService {
 
 
     private void validateProducts(List<ProductDTO> productsDTO) {
+        logger.debug("Validate products");
         if (productsDTO == null || productsDTO.isEmpty()) {
             throw new IllegalArgumentException("Invalid product!");
         }

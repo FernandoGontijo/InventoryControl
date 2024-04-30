@@ -5,6 +5,8 @@ import com.qikserve.inventoryControl.model.Product;
 import com.qikserve.inventoryControl.model.Promotion;
 import com.qikserve.inventoryControl.repository.ProductRepository;
 import com.qikserve.inventoryControl.repository.PromotionRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.List;
 @Service
 public class WiremockService {
 
+    private static final Logger logger = LogManager.getLogger(WiremockService.class);
 
     private static final String WIREMOCK_URL = "http://localhost:8081";
 
@@ -35,7 +38,7 @@ public class WiremockService {
     }
 
     public void getProductsFromWiremock() throws Exception {
-
+        logger.debug("Getting products from wiremock");
         try {
             String productsURL = WIREMOCK_URL + "/products";
 
@@ -49,6 +52,7 @@ public class WiremockService {
             products.forEach(product -> {
 
                 try {
+                    logger.debug("Getting more details for product {}", product.name());
                     fetchProductsInformations(product.id());
                 } catch (Exception e) {
                     throw new RuntimeException(e.getMessage());
@@ -76,6 +80,7 @@ public class WiremockService {
 
 
     private Product saveProduct(ProductWiremockDTO productInfo) {
+        logger.debug("Saving product {}", productInfo.name());
         Product product = new Product();
         product.setId(productInfo.id());
         product.setName(productInfo.name());
@@ -85,6 +90,7 @@ public class WiremockService {
     }
 
     private List<Promotion> savePromotions(ProductWiremockDTO productInfo, Product product) {
+        logger.debug("Saving promotions for product {}", productInfo.name());
         List<Promotion> promotions = new ArrayList<>();
         Promotion promotionToSave = new Promotion();
         if (productInfo.promotions() != null && !productInfo.promotions().isEmpty()) {
