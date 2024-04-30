@@ -15,7 +15,9 @@ When initializing the project, it will consume data from the wiremocks to popula
 2. What was the most useful feature that was added to the latest version of your chosen language? Please include a snippet of code that shows how you've used it.
 
 A powerful feature that was added was Records. With it, I can create simple immutable data objects concisely. Here's an example of how I used records in the project.
+
 ![Screenshot 2024-04-30 at 10.50.53.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2F2_%2F43qjh7g503l89k8v69x7pqnm0000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_N3fMft%2FScreenshot%202024-04-30%20at%2010.50.53.png)
+
 ![Screenshot 2024-04-30 at 11.17.12.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2F2_%2F43qjh7g503l89k8v69x7pqnm0000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_xfqnjs%2FScreenshot%202024-04-30%20at%2011.17.12.png)
 
 3. What did you find most difficult?
