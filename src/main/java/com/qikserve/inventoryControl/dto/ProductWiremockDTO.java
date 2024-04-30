@@ -1,16 +1,9 @@
 package com.qikserve.inventoryControl.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qikserve.inventoryControl.model.Promotion;
-import lombok.*;
 
-import java.io.Serializable;
+
 import java.util.List;
 
-public record ProductWiremockDTO (
-        @JsonProperty("id") String id,
-        @JsonProperty("name") String name,
-        @JsonProperty("price") int price,
-        @JsonProperty("promotions") List<Promotion> promotions
-) implements Serializable {}
+public record ProductWiremockDTO (String id, String name, int price, List<Promotion> promotions) {}
 
