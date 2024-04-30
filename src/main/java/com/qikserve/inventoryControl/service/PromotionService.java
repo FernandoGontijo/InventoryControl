@@ -57,8 +57,8 @@ public class PromotionService {
         return Util.modelMapper.map(promotionCreated, PromotionDTO.class);
     }
 
-    public PromotionDTO update(PromotionDTO promotionDTO) {
-        PromotionDTO promotionToUpdate = findBy(promotionDTO.id());
+    public PromotionDTO update(PromotionDTO promotionDTO, String id) {
+        PromotionDTO promotionToUpdate = findBy(id);
         Promotion promotion = new Promotion();
         promotion.setId(promotionToUpdate.id());
         promotion.setPrice(promotionDTO.price());

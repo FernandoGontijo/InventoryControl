@@ -42,8 +42,8 @@ public class CustomerService {
         return Util.modelMapper.map(customerCreated, CustomerDTO.class);
     }
 
-    public CustomerDTO update(CustomerDTO customerDTO) {
-        CustomerDTO cartToUpdate = findBy(customerDTO.id());
+    public CustomerDTO update(CustomerDTO customerDTO, String id) {
+        CustomerDTO cartToUpdate = findBy(id);
         Customer customer = new Customer();
         customer.setId(cartToUpdate.id());
         customer.setName(customerDTO.name());

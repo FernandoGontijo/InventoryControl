@@ -4,10 +4,8 @@ package com.qikserve.inventoryControl.service;
 import com.qikserve.inventoryControl.dto.CartDTO;
 import com.qikserve.inventoryControl.dto.ProductDTO;
 import com.qikserve.inventoryControl.dto.PromotionDTO;
-import com.qikserve.inventoryControl.enums.PromotionType;
 import com.qikserve.inventoryControl.model.Cart;
 import com.qikserve.inventoryControl.model.Product;
-import com.qikserve.inventoryControl.model.Promotion;
 import com.qikserve.inventoryControl.repository.CartRepository;
 import com.qikserve.inventoryControl.util.Util;
 import jakarta.persistence.EntityNotFoundException;
@@ -56,8 +54,8 @@ public class CartService {
         return Util.modelMapper.map(cartCreated, CartDTO.class);
     }
 
-    public CartDTO update(CartDTO cartDTO) {
-        CartDTO cartToUpdate = findBy(cartDTO.id());
+    public CartDTO update(CartDTO cartDTO, String id) {
+        CartDTO cartToUpdate = findBy(id);
         Cart cart = new Cart();
         cart.setId(cartToUpdate.id());
         cart.setCustomer(cartDTO.customer());
@@ -84,11 +82,11 @@ public class CartService {
     }
 
 
-    private Cart addProductToCart(List<ProductDTO> productsDTO, String cart_id) {
+    public CartDTO addProductToCart(List<ProductDTO> productsDTO, String cart_id) {
 
         validateProducts(productsDTO);
         CartDTO cartDTO = findBy(cart_id);
-        
+
         double totalSavings = 0;
         int quantity = 0;
 
@@ -104,7 +102,7 @@ public class CartService {
         cart.setTotalPrice(getTotalPrice(cart));
         cart.setTotalSavings(totalSavings);
 
-        return cart;
+        return Util.modelMapper.map(cart, CartDTO.class);
 
     }
 
@@ -139,7 +137,7 @@ public class CartService {
                         totalSavings += applyQtyBasedPriceOverride(cart, promotionDTO, product, products);
                         break;
                     case "FLAT_PERCENT":
-                        totalSavings += applyFlatPercentDiscount(cart, promotionDTO, product, products);
+                        totalSavings += applyFlatPercentDiscount(cart, product);
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown promotion type: " + promotionDTO.type());
@@ -157,9 +155,12 @@ public class CartService {
 
         if (products.size() >= promotionDTO.required_qty() && products.size() % 2 == 0) {
             savings = ((products.size() * product.getPrice()) / 2);
-            cart.getProducts().add(product);
+            product.setPrice(0);
+        } else if (products.size() >= promotionDTO.required_qty() && products.size() % 2 != 0) {
+            savings = (((products.size() * product.getPrice()) / 2) + product.getPrice());
         }
 
+        cart.getProducts().add(product);
         return savings;
     }
 
@@ -170,7 +171,9 @@ public class CartService {
         double normalPrice = product.getPrice();
 
         if (products.size() >= promotionDTO.required_qty() - 1) {
-            product.setPrice(700);
+            double discountAmount = product.getPrice() * 0.363;
+            double priceWithDiscount = product.getPrice() - discountAmount;
+            product.setPrice(priceWithDiscount);
             cart.getProducts().add(product);
         }
 
@@ -179,8 +182,7 @@ public class CartService {
         return savings;
     }
 
-    private double applyFlatPercentDiscount(Cart cart, PromotionDTO promotionDTO,
-                                            Product product, List<Product> products) {
+    private double applyFlatPercentDiscount(Cart cart, Product product) {
 
         double saving = (product.getPrice() * 0.10);
         double newPrice = product.getPrice() - saving;

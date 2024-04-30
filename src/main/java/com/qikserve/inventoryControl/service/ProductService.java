@@ -46,8 +46,8 @@ public class ProductService {
         return Util.modelMapper.map(productCreated, ProductDTO.class);
     }
 
-    public ProductDTO update(ProductDTO productDTO) {
-        ProductDTO productToUpdate = findBy(productDTO.id());
+    public ProductDTO update(ProductDTO productDTO, String id) {
+        ProductDTO productToUpdate = findBy(id);
         Product product = new Product();
         product.setId(productToUpdate.id());
         product.setPrice(productDTO.price());
